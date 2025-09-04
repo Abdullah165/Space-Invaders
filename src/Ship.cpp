@@ -1,7 +1,3 @@
-//
-// Created by Lenovo on 9/2/2025.
-//
-
 #include "../include/Ship.h"
 
 Ship::Ship(Vector2 pos, int width, int height, Color color, float speed)
