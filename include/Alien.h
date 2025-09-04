@@ -1,0 +1,10 @@
+#ifndef SPACE_INVADERS_ALIEN_H
+#define SPACE_INVADERS_ALIEN_H
+
+
+class Alien
+{
+};
+
+
+#endif //SPACE_INVADERS_ALIEN_H

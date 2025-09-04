@@ -8,24 +8,30 @@
 
 int main()
 {
-    const int screenWidth = 800;
-    const int screenHeight = 800;
+    const int screenWidth = 1280;
+    const int screenHeight = 720;
 
-    auto ship = Ship(Vector2(screenWidth / 2 - 40, screenHeight * 0.85), 80, 80,WHITE, 10);
-
-    // auto bullet = Bullet(10);
-
-    std::vector<Bullet> bullets;
 
     InitWindow(screenWidth, screenHeight, "Space Invaders");
 
+    InitAudioDevice();
+
     SetTargetFPS(60);
+
+
+    auto ship = Ship(Vector2(screenWidth / 2 - 40, screenHeight * 0.85), 80, 80,WHITE, 10);
+
+    std::vector<Bullet> bullets;
+
+    Sound level_start = LoadSound("assets/sounds/level-start-sfx.wav");
+
 
     while (!WindowShouldClose())
     {
         // Input
         if (IsKeyPressed(KEY_SPACE))
         {
+            PlaySound(level_start);
             Vector2 bulletStart = {ship.GetPos().x + 35, ship.GetPos().y - 25};
             bullets.emplace_back(bulletStart, 10.0f);
         }
@@ -60,6 +66,11 @@ int main()
 
         EndDrawing();
     }
+
+    // De-Initialization
+    UnloadSound(level_start);
+
+    CloseAudioDevice();
 
     CloseWindow();
 
