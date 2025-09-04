@@ -12,7 +12,10 @@ public:
     Ship(Vector2 pos, int width, int height, Color color, float speed);
 
     void Update();
+
     void Draw() const;
+
+    Vector2 GetPos() const;
 
 private:
     Vector2 pos{};

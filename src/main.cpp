@@ -1,6 +1,9 @@
+#include <algorithm>
 #include <iostream>
 #include <raylib.h>
+#include <vector>
 
+#include "../include/Bullet.h"
 #include "../include/Ship.h"
 
 int main()
@@ -8,7 +11,11 @@ int main()
     const int screenWidth = 800;
     const int screenHeight = 800;
 
-    auto ship = Ship(Vector2(screenWidth / 2 - 40, screenHeight  * 0.85), 80, 80,WHITE, 10);
+    auto ship = Ship(Vector2(screenWidth / 2 - 40, screenHeight * 0.85), 80, 80,WHITE, 10);
+
+    // auto bullet = Bullet(10);
+
+    std::vector<Bullet> bullets;
 
     InitWindow(screenWidth, screenHeight, "Space Invaders");
 
@@ -16,13 +23,41 @@ int main()
 
     while (!WindowShouldClose())
     {
-        BeginDrawing();
+        // Input
+        if (IsKeyPressed(KEY_SPACE))
+        {
+            Vector2 bulletStart = {ship.GetPos().x + 35, ship.GetPos().y - 25};
+            bullets.emplace_back(bulletStart, 10.0f);
+        }
 
+        // Update
         ship.Update();
 
+        // Update bullets
+        for (auto& bullet : bullets)
+        {
+            bullet.Update();
+        }
+
+        // Remove inactive bullets (off screen) from bullets vector
+        bullets.erase(
+            std::remove_if(bullets.begin(), bullets.end(),
+                           [](const Bullet& b) { return !b.IsActive(); }),
+            bullets.end()
+        );
+
+        BeginDrawing();
         ClearBackground(BLACK);
 
+        // Draw Ship
         ship.Draw();
+
+        // Draw Bullets
+        for (auto& bullet : bullets)
+        {
+            bullet.Draw();
+        }
+
         EndDrawing();
     }
 

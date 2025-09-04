@@ -39,3 +39,8 @@ void Ship::Draw() const
 {
     DrawRectangle(this->pos.x, this->pos.y, this->width, this->height, this->color);
 }
+
+Vector2 Ship::GetPos() const
+{
+    return pos;
+}

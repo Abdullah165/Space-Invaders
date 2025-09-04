@@ -30,6 +30,8 @@ endif()
 add_executable(${PROJECT_NAME} src/main.cpp
         src/Ship.cpp
         include/Ship.h
+        src/Bullet.cpp
+        include/Bullet.h
 )
 
 # Link our project against Raylib
