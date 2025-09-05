@@ -14,26 +14,39 @@ int main()
 
     InitWindow(screenWidth, screenHeight, "Space Invaders");
 
+    Texture2D background_texture = LoadTexture("assets/textures/PixelSpaceRage/PixelBackgroundSeamlessVertically.png");
+    Rectangle sourceRec = {0, 0, (float)background_texture.width, (float)background_texture.height};
+    Rectangle destRec = {0, 0, screenWidth, screenHeight};
+
+    //Player's bullet texture
+    Texture2D bulletTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/Minigun_Medium_png_processed.png");
+
+    //Player's ship texture
+    Texture2D playerTexture[] = {
+        LoadTexture("assets/textures/PixelSpaceRage/256px/PlayerRed_Frame_03_png_processed.png"),
+        LoadTexture("assets/textures/PixelSpaceRage/256px/PlayerRed_Frame_01_png_processed.png"),
+        LoadTexture("assets/textures/PixelSpaceRage/256px/PlayerRed_Frame_02Right_png_processed 1.png"),
+    };
+
     InitAudioDevice();
 
     SetTargetFPS(60);
 
 
-    auto ship = Ship(Vector2(screenWidth / 2 - 40, screenHeight * 0.85), 80, 80,WHITE, 10);
+    auto ship = Ship(playerTexture, Vector2(screenWidth / 2 - 40, screenHeight * 0.85), 80, 80,WHITE, 10);
 
     std::vector<Bullet> bullets;
 
-    Sound level_start = LoadSound("assets/sounds/level-start-sfx.wav");
-
+    Sound player_bullet = LoadSound("assets/sounds/player-bullet-sfx.wav");
 
     while (!WindowShouldClose())
     {
         // Input
         if (IsKeyPressed(KEY_SPACE))
         {
-            PlaySound(level_start);
-            Vector2 bulletStart = {ship.GetPos().x + 35, ship.GetPos().y - 25};
-            bullets.emplace_back(bulletStart, 10.0f);
+            Vector2 bulletStart = {ship.GetPos().x + 25, ship.GetPos().y - 5};
+            bullets.emplace_back(bulletStart, 10.0f, bulletTexture);
+            PlaySound(player_bullet);
         }
 
         // Update
@@ -52,8 +65,11 @@ int main()
             bullets.end()
         );
 
+        //Draw
         BeginDrawing();
         ClearBackground(BLACK);
+
+        DrawTexturePro(background_texture, sourceRec, destRec, Vector2{0, 0}, 0, WHITE);
 
         // Draw Ship
         ship.Draw();
@@ -68,7 +84,16 @@ int main()
     }
 
     // De-Initialization
-    UnloadSound(level_start);
+    UnloadTexture(background_texture);
+
+    UnloadTexture(bulletTexture);
+
+    for (int i = 0; i < NUM_SHIP_FRAME; ++i)
+    {
+        UnloadTexture(playerTexture[i]);
+    }
+
+    UnloadSound(player_bullet);
 
     CloseAudioDevice();
 
