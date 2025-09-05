@@ -1,6 +1,6 @@
 #include "../include/Bullet.h"
 
-Bullet::Bullet(Vector2 position, float speed) : position(position), speed(speed),active(true)
+Bullet::Bullet(Vector2 position, float speed,Texture2D buuletTexture) : position(position), speed(speed),bulletTexture(buuletTexture),active(true)
 {
 }
 
@@ -8,7 +8,7 @@ void Bullet::Draw() const
 {
     if (active)
     {
-        DrawRectangle(position.x, position.y, 10, 30, WHITE);
+        DrawTexture(bulletTexture,position.x,position.y,WHITE);
     }
 }
 
@@ -28,5 +28,4 @@ bool Bullet::IsActive() const
 {
     return active;
 }
-
 

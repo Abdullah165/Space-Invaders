@@ -5,7 +5,7 @@
 class Bullet
 {
 public:
-    Bullet(Vector2 position, float speed);
+    Bullet(Vector2 position, float speed, Texture2D bulletTexture);
 
     void Draw() const;
     void Update();
@@ -13,6 +13,7 @@ public:
     bool IsActive() const;
 
 private:
+    Texture2D bulletTexture;
     Vector2 position;
     float speed;
     bool active;
