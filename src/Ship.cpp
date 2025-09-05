@@ -1,7 +1,11 @@
 #include "../include/Ship.h"
 
-Ship::Ship(Vector2 pos, int width, int height, Color color, float speed)
+Ship::Ship(Texture2D shipTexture[], Vector2 pos, int width, int height, Color color, float speed)
 {
+    for (int i = 0; i < NUM_SHIP_FRAME; ++i)
+    {
+        this->shipTexture[i] = shipTexture[i];
+    }
     this->pos = pos;
     this->speed = speed;
     this->width = width;
@@ -31,9 +35,20 @@ void Ship::Update()
 }
 
 
-void Ship::Draw() const
+void Ship::Draw()
 {
-    DrawRectangle(this->pos.x, this->pos.y, this->width, this->height, this->color);
+    if (IsKeyDown(KEY_LEFT))
+    {
+        DrawTexture(shipTexture[0], this->pos.x, this->pos.y, WHITE);
+    }
+    else if (IsKeyDown(KEY_RIGHT))
+    {
+        DrawTexture(shipTexture[2], this->pos.x, this->pos.y, WHITE);
+    }
+    else
+    {
+        DrawTexture(shipTexture[NUM_SHIP_FRAME / 2], this->pos.x, this->pos.y, WHITE);
+    }
 }
 
 Vector2 Ship::GetPos() const

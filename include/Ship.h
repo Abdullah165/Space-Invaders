@@ -6,18 +6,20 @@
 #define SPACE_INVADERS_SHIP_H
 #include "raylib.h"
 
+#define NUM_SHIP_FRAME 3
 class Ship
 {
 public:
-    Ship(Vector2 pos, int width, int height, Color color, float speed);
+    Ship(Texture2D shipTexture[], Vector2 pos, int width, int height, Color color, float speed);
 
     void Update();
 
-    void Draw() const;
+    void Draw() ;
 
     Vector2 GetPos() const;
 
 private:
+    Texture2D shipTexture[NUM_SHIP_FRAME];
     Vector2 pos{};
     int width, height;
     Color color{};
