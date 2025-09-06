@@ -5,6 +5,7 @@
 
 #include "../include/Bullet.h"
 #include "../include/Ship.h"
+#include "../include/Alien.h"
 
 int main()
 {
@@ -34,10 +35,24 @@ int main()
 
 
     auto ship = Ship(playerTexture, Vector2(screenWidth / 2 - 40, screenHeight * 0.85), 80, 80,WHITE, 10);
+    Sound player_bullet = LoadSound("assets/sounds/player-bullet-sfx.wav");
 
     std::vector<Bullet> bullets;
 
-    Sound player_bullet = LoadSound("assets/sounds/player-bullet-sfx.wav");
+    // ALiens initialization.
+    std::vector<Alien> aliens;
+
+    int rows = 4;
+    int cols = 6;
+    aliens.reserve(rows * cols);
+
+    for (int i = 0; i < rows; ++i)
+    {
+        for (int j = 0; j < cols; ++j)
+        {
+            aliens.emplace_back(Vector2(screenWidth / rows, screenHeight / cols), i, j);
+        }
+    }
 
     while (!WindowShouldClose())
     {
@@ -56,6 +71,12 @@ int main()
         for (auto& bullet : bullets)
         {
             bullet.Update();
+        }
+
+        // Update aliens
+        for (auto& alien : aliens)
+        {
+            alien.Update(cols);
         }
 
         // Remove inactive bullets (off screen) from bullets vector
@@ -78,6 +99,13 @@ int main()
         for (auto& bullet : bullets)
         {
             bullet.Draw();
+        }
+
+
+        // Aliens
+        for (auto& alien : aliens)
+        {
+            alien.Draw();
         }
 
         EndDrawing();
