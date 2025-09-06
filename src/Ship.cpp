@@ -39,15 +39,15 @@ void Ship::Draw()
 {
     if (IsKeyDown(KEY_LEFT))
     {
-        DrawTexture(shipTexture[0], this->pos.x, this->pos.y, WHITE);
+        DrawTexture(shipTexture[0], this->pos.x, this->pos.y, WHITE);  // ship left animation
     }
     else if (IsKeyDown(KEY_RIGHT))
     {
-        DrawTexture(shipTexture[2], this->pos.x, this->pos.y, WHITE);
+        DrawTexture(shipTexture[2], this->pos.x, this->pos.y, WHITE);  // ship right animation
     }
     else
     {
-        DrawTexture(shipTexture[NUM_SHIP_FRAME / 2], this->pos.x, this->pos.y, WHITE);
+        DrawTexture(shipTexture[NUM_SHIP_FRAME / 2], this->pos.x, this->pos.y, WHITE); //Idle animation
     }
 }
 
