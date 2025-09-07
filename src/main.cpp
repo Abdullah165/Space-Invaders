@@ -42,15 +42,26 @@ int main()
     // ALiens initialization.
     std::vector<Alien> aliens;
 
+    Texture2D alienTexture;
+
     int rows = 4;
-    int cols = 6;
+    int cols = 8;
     aliens.reserve(rows * cols);
 
     for (int i = 0; i < rows; ++i)
     {
+        if (static_cast<float>(i) / rows < 0.5f )
+        {
+            alienTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/alien1.png");
+            std::cout << i << std::endl;
+        }
+        else
+        {
+            alienTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/alien0.png");
+        }
         for (int j = 0; j < cols; ++j)
         {
-            aliens.emplace_back(Vector2(screenWidth / rows, screenHeight / cols), i, j);
+            aliens.emplace_back(alienTexture, Vector2(screenWidth / rows, screenHeight / cols), i, j);
         }
     }
 
@@ -112,6 +123,8 @@ int main()
     }
 
     // De-Initialization
+
+    //Unload textures
     UnloadTexture(background_texture);
 
     UnloadTexture(bulletTexture);
@@ -121,6 +134,9 @@ int main()
         UnloadTexture(playerTexture[i]);
     }
 
+    UnloadTexture(alienTexture);
+
+    // Unload Sounds
     UnloadSound(player_bullet);
 
     CloseAudioDevice();

@@ -6,11 +6,12 @@
 class Alien
 {
 public:
-    Alien(Vector2 position, int row, int col);
+    Alien(Texture2D alienTexture,Vector2 position, int row, int col);
     void Draw() const;
     void Update(int columCount);
 
 private:
+    Texture2D alien_texture;
     Vector2 position;
     int width, height;
     float speed;
