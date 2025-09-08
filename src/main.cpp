@@ -33,8 +33,11 @@ int main()
 
     SetTargetFPS(60);
 
+    //Game start sound
+    Sound game_start_sound = LoadSound("assets/sounds/level-start-sfx.wav");
+    PlaySound(game_start_sound);
 
-    auto ship = Ship(playerTexture, Vector2(screenWidth / 2 - 40, screenHeight * 0.85), 80, 80,WHITE, 10);
+    auto ship = Ship(playerTexture, Vector2(screenWidth / 2 - 40, screenHeight * 0.85),WHITE, 5);
     Sound player_bullet = LoadSound("assets/sounds/player-bullet-sfx.wav");
 
     std::vector<Bullet> bullets;
@@ -50,7 +53,7 @@ int main()
 
     for (int i = 0; i < rows; ++i)
     {
-        if (static_cast<float>(i) / rows < 0.5f )
+        if (static_cast<float>(i) / rows < 0.5f)
         {
             alienTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/alien1.png");
             std::cout << i << std::endl;
@@ -64,6 +67,7 @@ int main()
             aliens.emplace_back(alienTexture, Vector2(screenWidth / rows, screenHeight / cols), i, j);
         }
     }
+
 
     while (!WindowShouldClose())
     {
@@ -84,18 +88,18 @@ int main()
             bullet.Update();
         }
 
-        // Update aliens
-        for (auto& alien : aliens)
-        {
-            alien.Update(cols);
-        }
-
         // Remove inactive bullets (off screen) from bullets vector
         bullets.erase(
             std::remove_if(bullets.begin(), bullets.end(),
                            [](const Bullet& b) { return !b.IsActive(); }),
             bullets.end()
         );
+
+        // Update aliens
+        for (auto& alien : aliens)
+        {
+            alien.Update(cols);
+        }
 
         //Draw
         BeginDrawing();
@@ -137,7 +141,14 @@ int main()
     UnloadTexture(alienTexture);
 
     // Unload Sounds
+    UnloadSound(game_start_sound);
+
     UnloadSound(player_bullet);
+
+    for (auto& alien : aliens)
+    {
+        alien.UnloadMovementSound();
+    }
 
     CloseAudioDevice();
 
