@@ -4,8 +4,11 @@ Alien::Alien(Texture2D alienTexture, Vector2 position, int row, int col) : alien
                                                                            position(position), row(row), col(col),
                                                                            width(50), height(50),
                                                                            paddingX(20),
-                                                                           paddingY(20), speed(2)
+                                                                           paddingY(20), speed(30),
+                                                                           movement_elapsed_time(MAX_MOVEMENT_DELAY)
+                                                                           , delta_time(0.01f)
 {
+    movement_sound = LoadSound("assets/sounds/alien-move-sfx.wav");
 }
 
 void Alien::Draw() const
@@ -18,15 +21,33 @@ void Alien::Draw() const
 
 void Alien::Update(int columCount)
 {
-    if (columCount + paddingX + position.x >= GetScreenWidth() / 1.8)
+    movement_elapsed_time -= delta_time;
+    if (movement_elapsed_time < 0)
     {
-        position.y += speed * 5; // Down the aliens a little bit
-        speed *= -1;
-    }
-    else if (paddingX + position.x <= GetScreenWidth() / 10)
-    {
-        speed *= -1;
-    }
+        if (columCount + paddingX + position.x >= GetScreenWidth() / 1.8)
+        {
+            position.y += speed * 2; // Down the aliens a little bit
+            delta_time += 0.02;
+            speed *= -1;
+        }
+        else if (paddingX + position.x <= GetScreenWidth() / 10)
+        {
+            speed *= -1;
+        }
 
-    position.x += speed;
+        position.x += speed;
+        movement_elapsed_time = MAX_MOVEMENT_DELAY;
+
+        PlayMovementSound();
+    }
+}
+
+void Alien::PlayMovementSound() const
+{
+    PlaySound(movement_sound);
+}
+
+void Alien::UnloadMovementSound() const
+{
+    UnloadSound(movement_sound);
 }
