@@ -10,7 +10,7 @@
 class Ship
 {
 public:
-    Ship(Texture2D shipTexture[], Vector2 pos, int width, int height, Color color, float speed);
+    Ship(Texture2D shipTexture[], Vector2 pos, Color color, float speed);
 
     void Update();
 
@@ -21,7 +21,6 @@ public:
 private:
     Texture2D shipTexture[NUM_SHIP_FRAME];
     Vector2 pos{};
-    int width, height;
     Color color{};
     float speed;
 };

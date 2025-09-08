@@ -1,6 +1,6 @@
 #include "../include/Ship.h"
 
-Ship::Ship(Texture2D shipTexture[], Vector2 pos, int width, int height, Color color, float speed)
+Ship::Ship(Texture2D shipTexture[], Vector2 pos,Color color, float speed)
 {
     for (int i = 0; i < NUM_SHIP_FRAME; ++i)
     {
@@ -8,8 +8,6 @@ Ship::Ship(Texture2D shipTexture[], Vector2 pos, int width, int height, Color co
     }
     this->pos = pos;
     this->speed = speed;
-    this->width = width;
-    this->height = height;
     this->color = color;
 }
 
@@ -28,9 +26,9 @@ void Ship::Update()
     {
         pos.x = 0;
     }
-    else if (pos.x + width >= GetScreenWidth())
+    else if (shipTexture[NUM_SHIP_FRAME - 1].width + pos.x >= GetScreenWidth())
     {
-        pos.x = GetScreenWidth() - width;
+        pos.x = GetScreenWidth() - shipTexture[NUM_SHIP_FRAME - 1].width;
     }
 }
 
