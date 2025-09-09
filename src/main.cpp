@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <iostream>
+#include <ostream>
 #include <raylib.h>
 #include <vector>
+#include <random>
 
 #include "../include/Bullet.h"
 #include "../include/Ship.h"
@@ -20,7 +22,9 @@ int main()
     Rectangle destRec = {0, 0, screenWidth, screenHeight};
 
     //Player's bullet texture
-    Texture2D bulletTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/Minigun_Medium_png_processed.png");
+    Texture2D playerBulletTexture =
+        LoadTexture("assets/textures/PixelSpaceRage/256px/Minigun_Medium_png_processed.png");
+    Texture2D alienBulletTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/bullet.png");
 
     //Player's ship texture
     Texture2D playerTexture[] = {
@@ -40,12 +44,22 @@ int main()
     auto ship = Ship(playerTexture, Vector2(screenWidth / 2 - 40, screenHeight * 0.85),WHITE, 5);
     Sound player_bullet = LoadSound("assets/sounds/player-bullet-sfx.wav");
 
-    std::vector<Bullet> bullets;
+    std::vector<Bullet> playerBullets;
+
 
     // ALiens initialization.
     std::vector<Alien> aliens;
 
-    Texture2D alienTexture;
+    Texture2D alienTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/alien.png");
+
+    Sound alienBulletSound = LoadSound("assets/sounds/alien-bullet-sfx.wav");
+
+    std::vector<Bullet> alienBullets;
+    float alien_bullet_spawn_timer = 20;
+
+    // Create a random engine
+    std::random_device rd;
+    std::mt19937 gen(rd());
 
     int rows = 4;
     int cols = 8;
@@ -53,15 +67,15 @@ int main()
 
     for (int i = 0; i < rows; ++i)
     {
-        if (static_cast<float>(i) / rows < 0.5f)
-        {
-            alienTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/alien1.png");
-            std::cout << i << std::endl;
-        }
-        else
-        {
-            alienTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/alien0.png");
-        }
+        // if (static_cast<float>(i) / rows < 0.5f)
+        // {
+        //     alienTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/alien1.png");
+        //     std::cout << i << std::endl;
+        // }
+        // else
+        // {
+        //     alienTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/alien0.png");
+        // }
         for (int j = 0; j < cols; ++j)
         {
             aliens.emplace_back(alienTexture, Vector2(screenWidth / rows, screenHeight / cols), i, j);
@@ -75,7 +89,7 @@ int main()
         if (IsKeyPressed(KEY_SPACE))
         {
             Vector2 bulletStart = {ship.GetPos().x + 25, ship.GetPos().y - 5};
-            bullets.emplace_back(bulletStart, 10.0f, bulletTexture);
+            playerBullets.emplace_back(bulletStart, 10.0f, playerBulletTexture, -1);
             PlaySound(player_bullet);
         }
 
@@ -83,23 +97,61 @@ int main()
         ship.Update();
 
         // Update bullets
-        for (auto& bullet : bullets)
+        for (auto& playerBullet : playerBullets)
         {
-            bullet.Update();
+            playerBullet.Update();
         }
 
         // Remove inactive bullets (off screen) from bullets vector
-        bullets.erase(
-            std::remove_if(bullets.begin(), bullets.end(),
+        playerBullets.erase(
+            std::remove_if(playerBullets.begin(), playerBullets.end(),
                            [](const Bullet& b) { return !b.IsActive(); }),
-            bullets.end()
+            playerBullets.end()
         );
+
 
         // Update aliens
         for (auto& alien : aliens)
         {
             alien.Update(cols);
         }
+
+        //Spawn alien bullet after delay.
+        alien_bullet_spawn_timer -= 0.2f;
+        if (alien_bullet_spawn_timer <= 0 && !aliens.empty())
+        {
+            std::uniform_int_distribution<> dist(0, static_cast<int>(aliens.size()) - 1);
+            int random_alien = dist(gen);
+            for (int i = 0; i < random_alien / 5; ++i)
+            {
+                Vector2 alienBullet = {
+                    aliens[i].GetAlienPosX() + 10,
+                    aliens[i].GetAlienPosY() - 40
+                };
+
+                //Random speed
+                std::uniform_int_distribution<> speed(3, 5);
+                int alien_speed = speed(gen);
+
+                alienBullets.emplace_back(alienBullet, alien_speed, alienBulletTexture, +1);
+            }
+            PlaySound(alienBulletSound);
+
+            alien_bullet_spawn_timer = 20; // reset timer
+        }
+
+
+        // Update alien's bullet
+        for (auto& alien_bullet : alienBullets)
+        {
+            alien_bullet.Update();
+        }
+
+        alienBullets.erase(
+            std::remove_if(alienBullets.begin(), alienBullets.end(),
+                           [](const Bullet& b) { return !b.IsActive(); }),
+            alienBullets.end()
+        );
 
         //Draw
         BeginDrawing();
@@ -110,8 +162,8 @@ int main()
         // Draw Ship
         ship.Draw();
 
-        // Draw Bullets
-        for (auto& bullet : bullets)
+        // Draw Ship Bullets
+        for (auto& bullet : playerBullets)
         {
             bullet.Draw();
         }
@@ -122,6 +174,11 @@ int main()
         {
             alien.Draw();
         }
+        // Draw Alien's Bullets
+        for (auto& alienBullet : alienBullets)
+        {
+            alienBullet.Draw();
+        }
 
         EndDrawing();
     }
@@ -131,7 +188,7 @@ int main()
     //Unload textures
     UnloadTexture(background_texture);
 
-    UnloadTexture(bulletTexture);
+    UnloadTexture(playerBulletTexture);
 
     for (int i = 0; i < NUM_SHIP_FRAME; ++i)
     {
@@ -149,6 +206,8 @@ int main()
     {
         alien.UnloadMovementSound();
     }
+
+    UnloadSound(alienBulletSound);
 
     CloseAudioDevice();
 
