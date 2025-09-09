@@ -7,10 +7,13 @@ class Alien
 {
 public:
     Alien(Texture2D alienTexture,Vector2 position, int row, int col);
-    void Draw() const;
+    void Draw() ;
     void Update(int columCount);
     void PlayMovementSound() const;
     void UnloadMovementSound() const;
+
+    float GetAlienPosX() const;
+    float GetAlienPosY() const;
 
 private:
     Texture2D alien_texture;
@@ -23,6 +26,9 @@ private:
     float movement_elapsed_time;
     float delta_time;
     Sound movement_sound;
+
+    float alienTexturePosX;
+    float alienTexturePosY;
 };
 
 

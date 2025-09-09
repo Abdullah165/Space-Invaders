@@ -1,5 +1,6 @@
 #include "../include/Alien.h"
 
+
 Alien::Alien(Texture2D alienTexture, Vector2 position, int row, int col) : alien_texture(alienTexture),
                                                                            position(position), row(row), col(col),
                                                                            width(50), height(50),
@@ -11,12 +12,12 @@ Alien::Alien(Texture2D alienTexture, Vector2 position, int row, int col) : alien
     movement_sound = LoadSound("assets/sounds/alien-move-sfx.wav");
 }
 
-void Alien::Draw() const
+void Alien::Draw()
 {
-    int x = position.x + col * (paddingX + width); // Add padding in x-axis
-    int y = position.y + row * (paddingY + height); // Add padding in y-axis
+    alienTexturePosX = position.x + col * (paddingX + width); // Add padding in x-axis
+    alienTexturePosY = position.y + row * (paddingY + height); // Add padding in y-axis
     //DrawRectangle(x, y, width, height, WHITE);
-    DrawTexture(alien_texture, x, y, WHITE);
+    DrawTexture(alien_texture, alienTexturePosX, alienTexturePosY, WHITE);
 }
 
 void Alien::Update(int columCount)
@@ -26,12 +27,14 @@ void Alien::Update(int columCount)
     {
         if (columCount + paddingX + position.x >= GetScreenWidth() / 1.8)
         {
-            position.y += speed * 2; // Down the aliens a little bit
-            delta_time += 0.02;
+            position.y += speed * 1.5f; // Down the aliens a little bit
+            delta_time += 0.01;
             speed *= -1;
         }
         else if (paddingX + position.x <= GetScreenWidth() / 10)
         {
+            position.y -= speed * 1.5f;
+            delta_time += 0.01;
             speed *= -1;
         }
 
@@ -41,6 +44,17 @@ void Alien::Update(int columCount)
         PlayMovementSound();
     }
 }
+
+float Alien::GetAlienPosX() const
+{
+    return alienTexturePosX;
+}
+
+float Alien::GetAlienPosY() const
+{
+    return alienTexturePosY;
+}
+
 
 void Alien::PlayMovementSound() const
 {
