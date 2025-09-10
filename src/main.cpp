@@ -145,6 +145,12 @@ int main()
         for (auto& alien_bullet : alienBullets)
         {
             alien_bullet.Update();
+
+            Rectangle alienRec = {
+                alien_bullet.GetPosition().x, alien_bullet.GetPosition().y, alien_bullet.GetWidth(),
+                alien_bullet.GetHeight()
+            };
+            ship.CheckCollision(alienRec);
         }
 
         alienBullets.erase(
