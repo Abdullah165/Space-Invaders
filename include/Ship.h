@@ -18,11 +18,14 @@ public:
 
     Vector2 GetPos() const;
 
+    void CheckCollision(const Rectangle& aliensBulletRec);
+
 private:
     Texture2D shipTexture[NUM_SHIP_FRAME];
     Vector2 pos{};
     Color color{};
     float speed;
+    bool isDied;
 };
 
 #endif //SPACE_INVADERS_SHIP_H
