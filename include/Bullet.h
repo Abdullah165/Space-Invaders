@@ -5,11 +5,13 @@
 class Bullet
 {
 public:
-    Bullet(Vector2 position, float speed, Texture2D bulletTexture,int dir);
+    Bullet(Vector2 position, float speed, Texture2D bulletTexture, int dir);
 
     void Draw() const;
     void Update();
-
+    Vector2 GetPosition() const;
+    float GetWidth() const;
+    float GetHeight() const;
     bool IsActive() const;
 
 private:

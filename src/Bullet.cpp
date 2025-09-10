@@ -25,6 +25,22 @@ void Bullet::Update()
     }
 }
 
+Vector2 Bullet::GetPosition() const
+{
+    return position;
+}
+
+float Bullet::GetWidth() const
+{
+    return bulletTexture.width;
+}
+
+float Bullet::GetHeight() const
+{
+    return bulletTexture.height;
+}
+
+
 bool Bullet::IsActive() const
 {
     return active;
