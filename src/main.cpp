@@ -27,7 +27,7 @@ int main()
     Texture2D alienBulletTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/bullet.png");
 
     //Player's ship texture
-    Texture2D playerTexture[] = {
+    Texture2D shipTexture[] = {
         LoadTexture("assets/textures/PixelSpaceRage/256px/PlayerRed_Frame_03_png_processed.png"),
         LoadTexture("assets/textures/PixelSpaceRage/256px/PlayerRed_Frame_01_png_processed.png"),
         LoadTexture("assets/textures/PixelSpaceRage/256px/PlayerRed_Frame_02Right_png_processed 1.png"),
@@ -41,8 +41,9 @@ int main()
     Sound game_start_sound = LoadSound("assets/sounds/level-start-sfx.wav");
     PlaySound(game_start_sound);
 
-    auto ship = Ship(playerTexture, Vector2(screenWidth / 2 - 40, screenHeight * 0.85),WHITE, 5);
-    Sound player_bullet = LoadSound("assets/sounds/player-bullet-sfx.wav");
+    auto ship = Ship(shipTexture, Vector2(screenWidth / 2 - 40, screenHeight * 0.85),WHITE, 5);
+    Sound ship_explosion_sound = LoadSound("assets/sounds/player-explosion-sfx.wav");
+    Sound ship_bullet = LoadSound("assets/sounds/player-bullet-sfx.wav");
 
     std::vector<Bullet> playerBullets;
 
@@ -51,6 +52,7 @@ int main()
 
     Texture2D alienTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/alien.png");
 
+    Sound alien_explosion_sound = LoadSound("assets/sounds/alien-explosion-sfx.wav");
     Sound alienBulletSound = LoadSound("assets/sounds/alien-bullet-sfx.wav");
 
     std::vector<Bullet> alienBullets;
@@ -60,21 +62,12 @@ int main()
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    int rows = 4;
-    int cols = 8;
+    int rows = 2;
+    int cols = 6;
     aliens.reserve(rows * cols);
 
     for (int i = 0; i < rows; ++i)
     {
-        // if (static_cast<float>(i) / rows < 0.5f)
-        // {
-        //     alienTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/alien1.png");
-        //     std::cout << i << std::endl;
-        // }
-        // else
-        // {
-        //     alienTexture = LoadTexture("assets/textures/PixelSpaceRage/256px/alien0.png");
-        // }
         for (int j = 0; j < cols; ++j)
         {
             aliens.emplace_back(alienTexture, Vector2(screenWidth / rows, screenHeight / cols), i, j);
@@ -82,14 +75,21 @@ int main()
     }
 
 
+    Rectangle button = {screenWidth / 2 - 100, screenHeight / 2, 150, 50};
+    bool buttonPressed = false;
+    bool isPlayerWin = false;
+
+    Sound game_over_sound = LoadSound("assets/sounds/game-over-sfx.wav");
+    bool hasGameOverSoundPlayed = false;
+
     while (!WindowShouldClose())
     {
         // Input
-        if (IsKeyPressed(KEY_SPACE) && !ship.IsActive())
+        if (IsKeyPressed(KEY_SPACE) && !ship.HasDead())
         {
             Vector2 bulletStart = {ship.GetPos().x + 25, ship.GetPos().y - 5};
             playerBullets.emplace_back(bulletStart, 10.0f, playerBulletTexture, -1);
-            PlaySound(player_bullet);
+            PlaySound(ship_bullet);
         }
 
         // Update
@@ -110,6 +110,7 @@ int main()
                 if (alien.CheckCollision(shipBulletRec))
                 {
                     playerBullet.SetActive(false);
+                    PlaySound(alien_explosion_sound);
                 }
             }
         }
@@ -125,34 +126,36 @@ int main()
         // Update aliens
         for (auto& alien : aliens)
         {
+            if (ship.HasDead()) break;
             alien.Update(cols);
         }
 
-        //Spawn alien bullet after delay.
-        alien_bullet_spawn_timer -= 0.1f;
-
+        // Check if all aliens dead
         bool allAliensDead = std::all_of(aliens.begin(), aliens.end(),
                                          [](const Alien& alien)
                                          {
                                              return !alien.IsActive();
                                          });
 
+        //Spawn alien bullet after delay.
+        alien_bullet_spawn_timer -= 0.15f;
         if (alien_bullet_spawn_timer <= 0 && !allAliensDead)
         {
             std::uniform_int_distribution<> dist(0, static_cast<int>(aliens.size()) - 1);
             int random_alien = dist(gen);
-            for (int i = 0; i < random_alien / 5; ++i)
+            for (int i = 0; i < random_alien / 4; ++i)
             {
-                Vector2 alienBullet = {
+                Vector2 alienBulletPos = {
                     aliens[i].GetAlienPosX() + 10,
                     aliens[i].GetAlienPosY() - 40
                 };
 
                 //Random speed
-                std::uniform_int_distribution<> speed(3, 5);
-                int alien_speed = speed(gen);
+                std::uniform_int_distribution<> speed(5, 6);
+                int alienBullet_speed = speed(gen);
 
-                alienBullets.emplace_back(alienBullet, alien_speed, alienBulletTexture, +1);
+                alienBullets.emplace_back(alienBulletPos, alienBullet_speed, alienBulletTexture, +1);
+                alienBulletTexture.width * 0.05;
             }
             PlaySound(alienBulletSound);
 
@@ -183,6 +186,42 @@ int main()
             alienBullets.end()
         );
 
+        if (allAliensDead)
+        {
+            isPlayerWin = true;
+        }
+
+        // Check if the button is pressed
+        if ((CheckCollisionPointRec(GetMousePosition(), button) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) ||
+            isPlayerWin)
+        {
+            buttonPressed = true;
+            isPlayerWin = false;
+            ship.SetNumOfLives(3);
+            aliens.clear();
+
+            hasGameOverSoundPlayed = false;
+
+            //Increase number of Aliens
+            rows += 1;
+            cols += 1;
+
+            // Limit the Aliens count
+            if (rows > 6 && cols > 8)
+            {
+                rows = 6;
+                cols = 8;
+            }
+
+            for (int i = 0; i < rows; ++i)
+            {
+                for (int j = 0; j < cols; ++j)
+                {
+                    aliens.emplace_back(alienTexture, Vector2(screenWidth / rows, screenHeight / cols), i, j);
+                }
+            }
+        }
+
         //Draw
         BeginDrawing();
         ClearBackground(BLACK);
@@ -198,16 +237,38 @@ int main()
             bullet.Draw();
         }
 
-
         // Aliens
         for (auto& alien : aliens)
         {
+            if (ship.HasDead()) break;
             alien.Draw();
         }
+
         // Draw Alien's Bullets
         for (auto& alienBullet : alienBullets)
         {
+            if (ship.HasDead()) break;
             alienBullet.Draw();
+        }
+
+        //Draw texts
+        DrawText(TextFormat("Lives: %i", ship.GetNumOfLives()), 50, 15, 30, WHITE);
+
+
+        //Draw buttons
+        if (ship.HasDead())
+        {
+            DrawRectangleRec(button, buttonPressed ? RED : WHITE);
+
+            DrawText("Play Again", screenWidth / 2 - 80, screenHeight / 1.9, 20, BLACK);
+            DrawText("Game Over", 370, screenHeight / 2 - 200, 100, WHITE);
+
+            if (!hasGameOverSoundPlayed && ship.HasDead())
+            {
+                PlaySound(ship_explosion_sound);
+                PlaySound(game_over_sound);
+                hasGameOverSoundPlayed = true;
+            }
         }
 
         EndDrawing();
@@ -222,7 +283,7 @@ int main()
 
     for (int i = 0; i < NUM_SHIP_FRAME; ++i)
     {
-        UnloadTexture(playerTexture[i]);
+        UnloadTexture(shipTexture[i]);
     }
 
     UnloadTexture(alienTexture);
@@ -230,14 +291,20 @@ int main()
     // Unload Sounds
     UnloadSound(game_start_sound);
 
-    UnloadSound(player_bullet);
+    UnloadSound(ship_bullet);
 
     for (auto& alien : aliens)
     {
         alien.UnloadMovementSound();
     }
 
+    UnloadSound(alien_explosion_sound);
+
     UnloadSound(alienBulletSound);
+
+    UnloadSound(ship_explosion_sound);
+
+    UnloadSound(game_over_sound);
 
     CloseAudioDevice();
 
