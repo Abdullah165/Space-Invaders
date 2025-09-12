@@ -1,7 +1,7 @@
 #include "../include/Bullet.h"
 
-Bullet::Bullet(Vector2 position, float speed, Texture2D buuletTexture, int direction)
-    : position(position), speed(speed), bulletTexture(buuletTexture), direction(direction), active(true)
+Bullet::Bullet(Vector2 position, float speed, Texture2D buletTexture, int direction)
+    : position(position), speed(speed), bulletTexture(buletTexture), direction(direction), active(true)
 {
 }
 
@@ -40,6 +40,10 @@ float Bullet::GetHeight() const
     return bulletTexture.height;
 }
 
+void Bullet::SetActive(bool active)
+{
+    this->active = active;
+}
 
 bool Bullet::IsActive() const
 {

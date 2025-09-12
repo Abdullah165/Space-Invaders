@@ -12,6 +12,7 @@ public:
     Vector2 GetPosition() const;
     float GetWidth() const;
     float GetHeight() const;
+    void SetActive(bool active);
     bool IsActive() const;
 
 private:
