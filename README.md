@@ -1,4 +1,4 @@
-#Space Invaders with C++ and Raylib 🚀
+# Space Invaders with C++ and Raylib 🚀
 A classic arcade-style recreation of Space Invaders, built to explore game development concepts with C++ and the Raylib library. Defend the Earth from waves of descending aliens!
 
 ✨ Features
