@@ -13,6 +13,25 @@ Ship::Ship(Texture2D shipTexture[], Vector2 pos, Color color, float speed) : isD
     this->color = color;
 }
 
+void Ship::Draw()
+{
+    if (isDied == false)
+    {
+        if (IsKeyDown(KEY_LEFT))
+        {
+            DrawTexture(shipTexture[0], this->pos.x, this->pos.y, WHITE); // ship left animation
+        }
+        else if (IsKeyDown(KEY_RIGHT))
+        {
+            DrawTexture(shipTexture[2], this->pos.x, this->pos.y, WHITE); // ship right animation
+        }
+        else
+        {
+            DrawTexture(shipTexture[NUM_SHIP_FRAME / 2], this->pos.x, this->pos.y, WHITE); //Idle animation
+        }
+    }
+}
+
 void Ship::Update()
 {
     if (isDied == false)
@@ -37,32 +56,7 @@ void Ship::Update()
     }
 }
 
-
-void Ship::Draw()
-{
-    if (isDied == false)
-    {
-        if (IsKeyDown(KEY_LEFT))
-        {
-            DrawTexture(shipTexture[0], this->pos.x, this->pos.y, WHITE); // ship left animation
-        }
-        else if (IsKeyDown(KEY_RIGHT))
-        {
-            DrawTexture(shipTexture[2], this->pos.x, this->pos.y, WHITE); // ship right animation
-        }
-        else
-        {
-            DrawTexture(shipTexture[NUM_SHIP_FRAME / 2], this->pos.x, this->pos.y, WHITE); //Idle animation
-        }
-    }
-}
-
-Vector2 Ship::GetPos() const
-{
-    return pos;
-}
-
-void Ship::CheckCollision(const Rectangle& alienBulletRect)
+bool Ship::CheckCollision(const Rectangle& alienBulletRect)
 {
     // Get the bounding box of the player's ship
     Rectangle shipRect = {
@@ -78,5 +72,18 @@ void Ship::CheckCollision(const Rectangle& alienBulletRect)
     {
         std::cout << "Player Collision!" << std::endl;
         isDied = true;
+        return true;
     }
+    return false;
 }
+
+bool Ship::IsActive() const
+{
+    return isDied;
+}
+
+Vector2 Ship::GetPos() const
+{
+    return pos;
+}
+

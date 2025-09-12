@@ -18,7 +18,8 @@ public:
 
     Vector2 GetPos() const;
 
-    void CheckCollision(const Rectangle& aliensBulletRec);
+    bool CheckCollision(const Rectangle& aliensBulletRec);
+    bool IsActive() const;
 
 private:
     Texture2D shipTexture[NUM_SHIP_FRAME];
