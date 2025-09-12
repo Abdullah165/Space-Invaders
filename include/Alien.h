@@ -12,9 +12,12 @@ public:
     void PlayMovementSound() const;
     void UnloadMovementSound() const;
 
+    bool CheckCollision(const Rectangle& shipBullet);
+
     float GetAlienPosX() const;
     float GetAlienPosY() const;
 
+    bool IsActive() const;
 private:
     Texture2D alien_texture;
     Vector2 position;
@@ -29,6 +32,8 @@ private:
 
     float alienTexturePosX;
     float alienTexturePosY;
+
+    bool active;
 };
 
 

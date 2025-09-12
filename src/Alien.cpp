@@ -1,5 +1,7 @@
 #include "../include/Alien.h"
 
+#include <iostream>
+
 
 Alien::Alien(Texture2D alienTexture, Vector2 position, int row, int col) : alien_texture(alienTexture),
                                                                            position(position), row(row), col(col),
@@ -7,13 +9,15 @@ Alien::Alien(Texture2D alienTexture, Vector2 position, int row, int col) : alien
                                                                            paddingX(20),
                                                                            paddingY(20), speed(30),
                                                                            movement_elapsed_time(MAX_MOVEMENT_DELAY)
-                                                                           , delta_time(0.01f)
+                                                                           , delta_time(0.01f), active(true)
 {
     movement_sound = LoadSound("assets/sounds/alien-move-sfx.wav");
 }
 
 void Alien::Draw()
 {
+    if (!active) return;
+
     alienTexturePosX = position.x + col * (paddingX + width); // Add padding in x-axis
     alienTexturePosY = position.y + row * (paddingY + height); // Add padding in y-axis
     //DrawRectangle(x, y, width, height, WHITE);
@@ -22,6 +26,8 @@ void Alien::Draw()
 
 void Alien::Update(int columCount)
 {
+    if (!active) return;
+
     movement_elapsed_time -= delta_time;
     if (movement_elapsed_time < 0)
     {
@@ -45,6 +51,27 @@ void Alien::Update(int columCount)
     }
 }
 
+bool Alien::CheckCollision(const Rectangle& shipBullet)
+{
+    Rectangle alienRect = {
+        alienTexturePosX, alienTexturePosY, static_cast<float>(alien_texture.width / 2.0),
+        static_cast<float>(alien_texture.height)
+    };
+
+    // Check for AABB collision
+    if (alienRect.x <= shipBullet.x + shipBullet.width
+        && alienRect.x + alienRect.width >= shipBullet.x
+        && alienRect.y <= shipBullet.y + shipBullet.height
+        && alienRect.y + alienRect.height >= shipBullet.y && active)
+    {
+        std::cout << "Ship Bullet collides the alien" << std::endl;
+        active = false;
+        return  true;
+    }
+    return false;
+}
+
+
 float Alien::GetAlienPosX() const
 {
     return alienTexturePosX;
@@ -64,4 +91,9 @@ void Alien::PlayMovementSound() const
 void Alien::UnloadMovementSound() const
 {
     UnloadSound(movement_sound);
+}
+
+bool Alien::IsActive() const
+{
+    return active;
 }
