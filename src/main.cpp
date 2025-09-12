@@ -46,7 +46,6 @@ int main()
 
     std::vector<Bullet> playerBullets;
 
-
     // ALiens initialization.
     std::vector<Alien> aliens;
 
@@ -86,7 +85,7 @@ int main()
     while (!WindowShouldClose())
     {
         // Input
-        if (IsKeyPressed(KEY_SPACE))
+        if (IsKeyPressed(KEY_SPACE) && !ship.IsActive())
         {
             Vector2 bulletStart = {ship.GetPos().x + 25, ship.GetPos().y - 5};
             playerBullets.emplace_back(bulletStart, 10.0f, playerBulletTexture, -1);
@@ -100,6 +99,19 @@ int main()
         for (auto& playerBullet : playerBullets)
         {
             playerBullet.Update();
+
+            Rectangle shipBulletRec = {
+                playerBullet.GetPosition().x, playerBullet.GetPosition().y, playerBullet.GetWidth(),
+                playerBullet.GetHeight()
+            };
+
+            for (auto& alien : aliens)
+            {
+                if (alien.CheckCollision(shipBulletRec))
+                {
+                    playerBullet.SetActive(false);
+                }
+            }
         }
 
         // Remove inactive bullets (off screen) from bullets vector
@@ -117,8 +129,15 @@ int main()
         }
 
         //Spawn alien bullet after delay.
-        alien_bullet_spawn_timer -= 0.2f;
-        if (alien_bullet_spawn_timer <= 0 && !aliens.empty())
+        alien_bullet_spawn_timer -= 0.1f;
+
+        bool allAliensDead = std::all_of(aliens.begin(), aliens.end(),
+                                         [](const Alien& alien)
+                                         {
+                                             return !alien.IsActive();
+                                         });
+
+        if (alien_bullet_spawn_timer <= 0 && !allAliensDead)
         {
             std::uniform_int_distribution<> dist(0, static_cast<int>(aliens.size()) - 1);
             int random_alien = dist(gen);
@@ -146,13 +165,18 @@ int main()
         {
             alien_bullet.Update();
 
-            Rectangle alienRec = {
+            Rectangle alienBulletRec = {
                 alien_bullet.GetPosition().x, alien_bullet.GetPosition().y, alien_bullet.GetWidth(),
                 alien_bullet.GetHeight()
             };
-            ship.CheckCollision(alienRec);
+
+            if (ship.CheckCollision(alienBulletRec))
+            {
+                alien_bullet.SetActive(false);
+            }
         }
 
+        //Remove the alien_bullet when it's not no longer active.
         alienBullets.erase(
             std::remove_if(alienBullets.begin(), alienBullets.end(),
                            [](const Bullet& b) { return !b.IsActive(); }),
