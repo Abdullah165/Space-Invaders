@@ -18,14 +18,19 @@ public:
 
     Vector2 GetPos() const;
 
+    void SetNumOfLives(int numOfLives);
+    int GetNumOfLives() const;
+
     bool CheckCollision(const Rectangle& aliensBulletRec);
-    bool IsActive() const;
+    bool HasDead() const;
 
 private:
     Texture2D shipTexture[NUM_SHIP_FRAME];
     Vector2 pos{};
     Color color{};
     float speed;
+
+    int number_of_lives;
     bool isDied;
 };
 

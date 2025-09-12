@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-Ship::Ship(Texture2D shipTexture[], Vector2 pos, Color color, float speed) : isDied(false)
+Ship::Ship(Texture2D shipTexture[], Vector2 pos, Color color, float speed) : number_of_lives(3), isDied(false)
 {
     for (int i = 0; i < NUM_SHIP_FRAME; ++i)
     {
@@ -15,7 +15,7 @@ Ship::Ship(Texture2D shipTexture[], Vector2 pos, Color color, float speed) : isD
 
 void Ship::Draw()
 {
-    if (isDied == false)
+    if (!HasDead())
     {
         if (IsKeyDown(KEY_LEFT))
         {
@@ -34,13 +34,13 @@ void Ship::Draw()
 
 void Ship::Update()
 {
-    if (isDied == false)
+    if (!HasDead())
     {
-        if (IsKeyDown(KEY_LEFT))
+        if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
         {
             this->pos.x -= speed;
         }
-        else if (IsKeyDown(KEY_RIGHT))
+        else if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
         {
             this->pos.x += speed;
         }
@@ -56,34 +56,46 @@ void Ship::Update()
     }
 }
 
+void Ship::SetNumOfLives(int numOfLives)
+{
+    this->number_of_lives = numOfLives;
+}
+
+
+int Ship::GetNumOfLives() const
+{
+    return number_of_lives;
+}
+
 bool Ship::CheckCollision(const Rectangle& alienBulletRect)
 {
+    if (HasDead()) return false;
+
     // Get the bounding box of the player's ship
     Rectangle shipRect = {
-        pos.x, pos.y, static_cast<float>(shipTexture[1].width / 6), static_cast<float>(shipTexture[1].height - 50)
+        pos.x, pos.y, static_cast<float>(shipTexture->width), static_cast<float>(shipTexture->height)
     };
 
+
     // Check for AABB collision
-    if (shipRect.x < alienBulletRect.x + alienBulletRect.width &&
-        shipRect.x + shipRect.width > alienBulletRect.x &&
-        shipRect.y < alienBulletRect.y + alienBulletRect.height &&
-        shipRect.y + shipRect.height > alienBulletRect.y &&
+    if (shipRect.x < alienBulletRect.x + 40 + (alienBulletRect.width * 0.05f) &&
+        shipRect.x + shipRect.width > alienBulletRect.x + 40 &&
+        shipRect.y < alienBulletRect.y +40 + (alienBulletRect.height * 0.2f) &&
+        shipRect.y + shipRect.height > alienBulletRect.y +40 &&
         !isDied)
     {
-        std::cout << "Player Collision!" << std::endl;
-        isDied = true;
+        number_of_lives--;
         return true;
     }
     return false;
 }
 
-bool Ship::IsActive() const
+bool Ship::HasDead() const
 {
-    return isDied;
+    return number_of_lives == 0;
 }
 
 Vector2 Ship::GetPos() const
 {
     return pos;
 }
-
