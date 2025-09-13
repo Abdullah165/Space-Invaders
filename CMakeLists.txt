@@ -34,6 +34,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
         include/Bullet.h
         src/Alien.cpp
         include/Alien.h
+        src/Game.cpp
+        include/Game.h
 )
 
 # Link our project against Raylib
