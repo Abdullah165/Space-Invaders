@@ -13,7 +13,6 @@ Lives: A simple system to track the player's remaining lives.
 Sound Effects: Basic sounds for shooting, explosions, and alien movement.
 
 📚 What I Learned
-This project was a fantastic exercise in moving beyond single-entity games. Key takeaways include:
 
 Object-Oriented Design: Structuring the game using classes for the Player, Alien, and Bullet to manage their individual state and behavior.
 
