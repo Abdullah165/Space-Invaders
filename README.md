@@ -14,8 +14,6 @@ Sound Effects: Basic sounds for shooting, explosions, and alien movement.
 
 # What I Learned
 
-Object-Oriented Design: Structuring the game using classes for the Player, Alien, and Bullet to manage their individual state and behavior.
-
 Managing Collections: Using vectors to handle a large number of game objects, such as the entire alien swarm and multiple on-screen bullets.
 
 Group Movement Logic: Implementing the classic side-to-side, stepping-down movement pattern for the alien swarm as a single cohesive unit.
