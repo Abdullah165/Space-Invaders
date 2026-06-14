@@ -1,7 +1,7 @@
-# Space Invaders with C++ and Raylib 🚀
+# Space Invaders with C++ and Raylib 
 A classic arcade-style recreation of Space Invaders, built to explore game development concepts with C++ and the Raylib library.
 
-✨ Features
+# Features
 Player Control: Smooth left and right movement and laser firing.
 
 Shooting Mechanics: Both the player and aliens can fire projectiles.
@@ -12,7 +12,7 @@ Lives: A simple system to track the player's remaining lives.
 
 Sound Effects: Basic sounds for shooting, explosions, and alien movement.
 
-📚 What I Learned
+# What I Learned
 
 Object-Oriented Design: Structuring the game using classes for the Player, Alien, and Bullet to manage their individual state and behavior.
 
@@ -24,7 +24,7 @@ Timed Events & Cooldowns: Managing player fire rate and the aliens' random shoot
 
 Resource Management: Loading and unloading textures (sprites) and sound effects properly.
 
-🎮 How to Play
+# How to Play
 Move: Use the A and D keys or the Left and Right Arrow keys to move your ship.
 
 Shoot: Press the Spacebar to fire your bullets.
